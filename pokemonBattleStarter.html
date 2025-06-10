@@ -68,8 +68,7 @@
 
         <div class="row">
             <div class="col-md-5" id="pok1">
-                <label for="pokemon">Choose a pokemon</label><br><br>
-
+                <label for="pokemon1">Choose a pokemon</label><br><br>
                 <select id="pokemon1">
                     <option value="null">Pick an option from below</option>
                     <option value="pikachu">Pikachu</option>
@@ -81,8 +80,7 @@
             </div>
             <div class="col-md-2" id="mid"></div>
             <div class="col-md-5" id="pok2">
-                <label for="superheroes">Choose a pokemon</label><br><br>
-
+                <label for="pokemon2">Choose a pokemon</label><br><br>
                 <select id="pokemon2">
                     <option value="null">Pick an option from below</option>
                     <option value="pikachu">Pikachu</option>
@@ -109,35 +107,28 @@
 </body>
 
 <script type="text/javascript">
+    // Attach listeners to the <select> elements
     document.getElementById("pokemon1").addEventListener("change", pokSelection);
     document.getElementById("pokemon2").addEventListener("change", pokSelection);
-    //var accessTok = '10101352014988076';
-    var pok1Stats = {};
-    var pok2Stats = {};
 
+    var pok1Stats = [];
+    var pok2Stats = [];
 
     function pokSelection(e) {
-        //console.log(this.value);
         const id = this.id;
-        console.log(this.id);
-        if (this.value != '') {
-
+        if (this.value != '' && this.value != 'null') {
             const url = 'https://pokeapi.co/api/v2/pokemon/' + this.value;
             fetch(url, {
                 "method": "GET",
             })
                 .then(function (response) {
-                    //console.log(response);
                     return response.json();
                 }).then(function (data) {
-                    console.log(data);
                     if (id == 'pokemon1') {
                         pok1Stats = data.stats;
-                        //console.log(pok1stats);
                     }
                     else {
                         pok2Stats = data.stats;
-                        //console.log(pok2Stats);
                     }
                     renderImgNStats(id + "res", data.stats, data.sprites.other["official-artwork"].front_default)
                 })
@@ -148,8 +139,6 @@
     }
 
     function renderImgNStats(location, stats, imgURL) {
-
-        //console.log(location,stats,imgURL);
         document.getElementById(location).innerHTML = '';
         var img = new Image();
         img.src = imgURL;
@@ -157,44 +146,93 @@
         document.getElementById(location).appendChild(img);
 
         stats.forEach((stat) => {
-            console.log(stat.base_stat, stat.stat["name"]);
             document.getElementById(location).innerHTML += "<br><b> " + stat.stat["name"].toUpperCase() + "</b> : " + stat.base_stat + "<br>";
         })
 
-        if (document.getElementById("pokemon1res").innerHTML.length != 0 && document.getElementById("pokemon2res").innerHTML.length != 0) {
-            console.log("triggered");
+        if (
+            document.getElementById("pokemon1res").innerHTML.length != 0 &&
+            document.getElementById("pokemon2res").innerHTML.length != 0
+        ) {
             document.getElementById("action").style.visibility = "visible";
             document.getElementById("action").innerHTML = "<button id='actiontodo' type='button' class='btn btn-danger btn-lg btn-block'>FIGHT</button>"
             document.getElementById("actiontodo").addEventListener("click", fight);
         }
-
     }
 
     function fight() {
-
         var newDiv = document.createElement("div");
         newDiv.id = "msg"
-        newDiv.class = "msg";
+        newDiv.className = "msg";
         var newContent = document.createTextNode("Calculating and randomising fight parameters, FIGHT");
         newDiv.appendChild(newContent);
 
-        //CODE HERE
+        // Sum base stats for each pokemon
+        const poke1Total = pok1Stats.reduce((sum, stat) => sum + stat.base_stat, 0);
+        const poke2Total = pok2Stats.reduce((sum, stat) => sum + stat.base_stat, 0);
 
+        let pokeMultiplier1 = Math.random();
+        const pokeMultiplier2 = Math.random();
 
+        let poke1TotalStats = poke1Total * pokeMultiplier1;
+        const poke2TotalStats = poke2Total * pokeMultiplier2;
+
+        let criticalMsg = "";
+        if (pokeMultiplier1 >= 0.9) {
+            poke1TotalStats *= 1.2;
+            criticalMsg = "<br><span style='color:red; font-weight:bold;'>Critical Hit!</span><br>";
+        }
+
+        if (pokeMultiplier2 >= 0.9) {
+            poke2TotalStats *= 1.2;
+            criticalMsg += "<br><span style='color:red; font-weight:bold;'>Critical Hit!</span><br>";
+        }
+        fightStatsMsg = "<br><b>Fight Stats:</b><br>" +
+            document.getElementById("pokemon1").value.toUpperCase() + " Total Stats: " + poke1TotalStats.toFixed(2) + "<br>" +
+            document.getElementById("pokemon2").value.toUpperCase() + " Total Stats: " + poke2TotalStats.toFixed(2) + "<br>";
+        let winnerMsg = "";
+        if (poke1TotalStats > poke2TotalStats) {
+            winnerMsg = "<br><b>Winner is: " + document.getElementById("pokemon1").value.toUpperCase() + "</b>";
+        } else if (poke1TotalStats < poke2TotalStats) {
+            winnerMsg = "<br><b>Winner is: " + document.getElementById("pokemon2").value.toUpperCase() + "</b>";
+        } else {
+            winnerMsg = "<br><b>It's a tie!</b>";
+        }
+
+        newDiv.innerHTML += criticalMsg;
+        newDiv.innerHTML += fightStatsMsg;
+        newDiv.innerHTML += winnerMsg;
+
+        // Change FIGHT to RESET
+        const actionDiv = document.getElementById("action");
+        actionDiv.innerHTML = "<button id='resetBtn' type='button' class='btn btn-warning btn-lg btn-block'>RESET</button>";
+        document.getElementById("resetBtn").addEventListener("click", resetEnv);
 
         document.body.appendChild(newDiv);
-
     }
 
     function resetEnv() {
+        // Reset dropdowns
+        document.getElementById("pokemon1").selectedIndex = 0;
+        document.getElementById("pokemon2").selectedIndex = 0;
 
-        //CODE HERE
+        // Clear image and stats
+        document.getElementById("pokemon1res").innerHTML = '';
+        document.getElementById("pokemon2res").innerHTML = '';
 
+        // Hide action button
+        document.getElementById("action").style.visibility = "hidden";
+        document.getElementById("action").innerHTML = '';
+
+        // Remove result message
+        const msg = document.getElementById("msg");
+        if (msg) {
+            msg.remove();
+        }
+
+        // Reset stat storage
+        pok1Stats = [];
+        pok2Stats = [];
     }
-
-
-
-
 </script>
 
 </html>
