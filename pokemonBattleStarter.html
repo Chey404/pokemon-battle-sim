@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        div {
+            text-align: center;
+        }
+
+        body {
+            background-color: gainsboro;
+        }
+
+        #action,
+        #fightBtn {
+            visibility: hidden;
+            background-color: crimson;
+            font-size: large;
+            border: 5px;
+            z-index: 1;
+            position: relative;
+            width: fit-content;
+
+            padding: 20px;
+            padding-left: 40px;
+            padding-right: 40px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+            margin-top: -30%;
+
+        }
+
+        .msg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+        }
+    </style>
+    <title>Pokemon Battle</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+
+
+
+            </div>
+            <div class="col-md-6">
+                <h1>Let's Fight</h1><br> <br>
+                <h3>A galactic quest for supremacy!</h3><br> <br>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-5" id="pok1">
+                <label for="pokemon">Choose a pokemon</label><br><br>
+
+                <select id="pokemon1">
+                    <option value="null">Pick an option from below</option>
+                    <option value="pikachu">Pikachu</option>
+                    <option value="bulbasaur">Bulbasaur</option>
+                    <option value="charmander">Charmander</option>
+                    <option value="squirtle">Squirtle</option>
+                    <option value="cyndaquil">Cyndaquil</option>
+                </select>
+            </div>
+            <div class="col-md-2" id="mid"></div>
+            <div class="col-md-5" id="pok2">
+                <label for="superheroes">Choose a pokemon</label><br><br>
+
+                <select id="pokemon2">
+                    <option value="null">Pick an option from below</option>
+                    <option value="pikachu">Pikachu</option>
+                    <option value="bulbasaur">Bulbasaur</option>
+                    <option value="charmander">Charmander</option>
+                    <option value="squirtle">Squirtle</option>
+                    <option value="cyndaquil">Cyndaquil</option>
+                </select>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5" id="pokemon1res"></div>
+            <div class="col-md-2" id="mid"></div>
+            <div class="col-md-5" id="pokemon2res"></div>
+        </div>
+
+        <div id="action">
+
+        </div>
+    </div>
+
+
+</body>
+
+<script type="text/javascript">
+    document.getElementById("pokemon1").addEventListener("change", pokSelection);
+    document.getElementById("pokemon2").addEventListener("change", pokSelection);
+    //var accessTok = '10101352014988076';
+    var pok1Stats = {};
+    var pok2Stats = {};
+
+
+    function pokSelection(e) {
+        //console.log(this.value);
+        const id = this.id;
+        console.log(this.id);
+        if (this.value != '') {
+
+            const url = 'https://pokeapi.co/api/v2/pokemon/' + this.value;
+            fetch(url, {
+                "method": "GET",
+            })
+                .then(function (response) {
+                    //console.log(response);
+                    return response.json();
+                }).then(function (data) {
+                    console.log(data);
+                    if (id == 'pokemon1') {
+                        pok1Stats = data.stats;
+                        //console.log(pok1stats);
+                    }
+                    else {
+                        pok2Stats = data.stats;
+                        //console.log(pok2Stats);
+                    }
+                    renderImgNStats(id + "res", data.stats, data.sprites.other["official-artwork"].front_default)
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+    }
+
+    function renderImgNStats(location, stats, imgURL) {
+
+        //console.log(location,stats,imgURL);
+        document.getElementById(location).innerHTML = '';
+        var img = new Image();
+        img.src = imgURL;
+        img.id = location + "img";
+        document.getElementById(location).appendChild(img);
+
+        stats.forEach((stat) => {
+            console.log(stat.base_stat, stat.stat["name"]);
+            document.getElementById(location).innerHTML += "<br><b> " + stat.stat["name"].toUpperCase() + "</b> : " + stat.base_stat + "<br>";
+        })
+
+        if (document.getElementById("pokemon1res").innerHTML.length != 0 && document.getElementById("pokemon2res").innerHTML.length != 0) {
+            console.log("triggered");
+            document.getElementById("action").style.visibility = "visible";
+            document.getElementById("action").innerHTML = "<button id='actiontodo' type='button' class='btn btn-danger btn-lg btn-block'>FIGHT</button>"
+            document.getElementById("actiontodo").addEventListener("click", fight);
+        }
+
+    }
+
+    function fight() {
+
+        var newDiv = document.createElement("div");
+        newDiv.id = "msg"
+        newDiv.class = "msg";
+        var newContent = document.createTextNode("Calculating and randomising fight parameters, FIGHT");
+        newDiv.appendChild(newContent);
+
+        //CODE HERE
+
+
+
+        document.body.appendChild(newDiv);
+
+    }
+
+    function resetEnv() {
+
+        //CODE HERE
+
+    }
+
+
+
+
+</script>
+
+</html>
