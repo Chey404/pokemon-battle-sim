@@ -42,6 +42,46 @@
             transform: translate(-50%, -50%);
             width: 50%;
         }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+        }
+
+        .winner-anim {
+            animation: bounce 1s ease-out 3;
+            box-shadow: 0 0 20px 5px gold;
+            border: 3px solid gold;
+            border-radius: 8px;
+        }
+
+        .loser-anim {
+            animation: shake 0.6s ease-in-out 3;
+            opacity: 0.7;
+        }
     </style>
     <title>Pokemon Battle</title>
 </head>
@@ -163,7 +203,7 @@
         var newDiv = document.createElement("div");
         newDiv.id = "msg"
         newDiv.className = "msg";
-        var newContent = document.createTextNode("Calculating and randomising fight parameters, FIGHT");
+        var newContent = document.createTextNode("Calculating and randomizing fight parameters, FIGHT");
         newDiv.appendChild(newContent);
 
         // Sum base stats for each pokemon
@@ -201,6 +241,22 @@
         newDiv.innerHTML += criticalMsg;
         newDiv.innerHTML += fightStatsMsg;
         newDiv.innerHTML += winnerMsg;
+
+        const pok1Img = document.getElementById("pokemon1resimg");
+        const pok2Img = document.getElementById("pokemon2resimg");
+
+        if (poke1TotalStats > poke2TotalStats) {
+            pok1Img.classList.add("winner-anim");
+            pok2Img.classList.add("loser-anim");
+        } else if (poke1TotalStats < poke2TotalStats) {
+            pok2Img.classList.add("winner-anim");
+            pok1Img.classList.add("loser-anim");
+        } else {
+            // Shake both for tie
+            pok1Img.classList.add("shake");
+            pok2Img.classList.add("shake");
+        }
+
 
         // Change FIGHT to RESET
         const actionDiv = document.getElementById("action");
