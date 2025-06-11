@@ -211,10 +211,10 @@
         const poke2Total = pok2Stats.reduce((sum, stat) => sum + stat.base_stat, 0);
 
         let pokeMultiplier1 = Math.random();
-        const pokeMultiplier2 = Math.random();
+        let pokeMultiplier2 = Math.random();
 
         let poke1TotalStats = poke1Total * pokeMultiplier1;
-        const poke2TotalStats = poke2Total * pokeMultiplier2;
+        let poke2TotalStats = poke2Total * pokeMultiplier2;
 
         let criticalMsg = "";
         if (pokeMultiplier1 >= 0.9) {

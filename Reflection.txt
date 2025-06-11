@@ -1,0 +1,8 @@
+For this assignment, I leveraged AI by asking it what is the best way to iterate through an array
+and sum up all the integers. This is why I used the .reduce function. I also prompted ChatGPT
+to create the reset function which I found to work seamlessly. For additions to the project,
+I coded a 'critical hit' feature (similar to the actual Pokemon games) if the randomly generated 
+'pokeMultiplier' is equal to or over 0.9. Lastly, I tried to leverage ChatGPT to create a battle log,
+however I was unhappy with integrating the battlelog into the UI. The page either got too cramped
+or the HTML kept overlapping. Instead I AI generated the CSS for the winner and loser animations 
+and added that to display after the fight result was calulated.
